@@ -1,61 +1,47 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
-const alertSets = [
-  [
-    {
-      title: "Flood Warning",
-      severity: "High",
-      location: "Downtown Sector",
-    },
-    {
-      title: "Heavy Traffic",
-      severity: "Medium",
-      location: "Main Transit Corridor",
-    },
-    {
-      title: "Heatwave Alert",
-      severity: "Low",
-      location: "City Wide",
-    },
-  ],
+type Alert = {
+  id: number;
+  title: string;
+  severity: string;
+  location: string;
+};
 
-  [
-    {
-      title: "Transit Delay",
-      severity: "Medium",
-      location: "North Terminal",
-    },
-    {
-      title: "Storm Advisory",
-      severity: "High",
-      location: "West District",
-    },
-    {
-      title: "Road Maintenance",
-      severity: "Low",
-      location: "Downtown Core",
-    },
-  ],
-];
-
-export default function EmergencyPanel() {
-  const [alerts, setAlerts] = useState(alertSets[0]);
+export default function EmergencyPanel({
+  setSelectedAlert,
+}: {
+  setSelectedAlert: (alert: string) => void;
+}) {
+  const [alerts, setAlerts] = useState<
+    Alert[]
+  >([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAlerts((prev) =>
-        prev === alertSets[0]
-          ? alertSets[1]
-          : alertSets[0]
-      );
-    }, 8000);
+    const fetchAlerts = async () => {
+      try {
+        const response =
+          await axios.get(
+            "http://127.0.0.1:8000/alerts"
+          );
 
-    return () => clearInterval(interval);
+        setAlerts(response.data);
+      } catch (error) {
+        console.error(
+          "Error fetching alerts:",
+          error
+        );
+      }
+    };
+
+    fetchAlerts();
   }, []);
 
-  const getSeverityStyles = (severity: string) => {
+  const getSeverityStyles = (
+    severity: string
+  ) => {
     switch (severity) {
       case "High":
         return "bg-red-500/20 text-red-400 border border-red-500/20";
@@ -84,10 +70,13 @@ export default function EmergencyPanel() {
       </div>
 
       <div className="space-y-4">
-        {alerts.map((alert, index) => (
+        {alerts.map((alert) => (
           <div
-            key={index}
-            className="bg-zinc-800 rounded-2xl p-4 border border-zinc-700 hover:border-zinc-600 transition-all"
+            key={alert.id}
+            onClick={() =>
+              setSelectedAlert(alert.title)
+            }
+            className="bg-zinc-800 rounded-2xl p-4 border border-zinc-700 hover:border-zinc-600 transition-all cursor-pointer hover:scale-[1.02]"
           >
             <div className="flex justify-between items-center">
               <h3 className="font-semibold text-lg">
