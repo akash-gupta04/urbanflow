@@ -138,11 +138,7 @@ export default function HomePage() {
           <div className="uf-card flex min-h-0 flex-1 flex-col justify-center p-5 sm:p-6">
             <Sparkles className="h-8 w-8 text-indigo-400/90" aria-hidden />
             <p className="mt-3 text-sm font-medium text-slate-300">
-              AI + maps + metrics share one API base — configure with{" "}
-              <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-xs text-teal-200/90">
-                NEXT_PUBLIC_API_URL
-              </code>
-              .
+              Checkout the Github Repository for Source Code!
             </p>
           </div>
         </aside>
