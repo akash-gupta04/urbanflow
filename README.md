@@ -1,176 +1,196 @@
 # 🌆 UrbanFlow
 
-> **AI-Powered Smart City Infrastructure for Sustainable Urban Living**
+**AI-Powered Smart City Intelligence Platform**
+🔗 **Devpost:** [UrbanFlow Submission] - (https://devpost.com/software/urbanflow-gtxeoq)) 
 
-UrbanFlow is an AI-driven smart city platform focused on sustainable transportation, emergency response, urban accessibility, and climate-conscious infrastructure.
+UrbanFlow is a smart city intelligence platform designed to improve **urban mobility, emergency response, and sustainable transportation** using **AI-powered recommendations, real-time routing, predictive analytics, and live city monitoring**.
 
-Built for the **IBM Z × UNSA Sheridan Hackathon 2026**, UrbanFlow leverages enterprise technologies, cloud computing, and artificial intelligence to address real-world urban challenges aligned with the **United Nations Sustainable Development Goals (UN SDGs).**
+Built for the **IBM Z x UNSA Hackathon 2026**, UrbanFlow combines **live city data**, **Google Maps intelligence**, and **IBM Granite Time Series forecasting** to help cities make smarter transportation and emergency decisions.
 
 ---
 
-# 🚀 Vision
+## 🚀 Features
 
-Modern cities face increasing challenges:
+### 📊 Live City Dashboard
+
+* Real-time city metrics
+* Traffic reduction insights
+* Transit efficiency monitoring
+* Emergency accessibility indicators
+* Sustainability metrics
+
+### 🗺️ Smart Routing & Navigation
+
+* Google Maps powered directions
+* Transit, walking, and driving routes
+* Live ETA and route optimization
+* Turn-by-turn directions
+* Dynamic route visualization on map
+
+### 🚨 Emergency Intelligence
+
+* Emergency alerts dashboard
+* Smart emergency routing
+* Flood / traffic / weather awareness
+* Faster emergency access recommendations
+
+### 🤖 AI Smart Recommendations
+
+* AI-generated city recommendations
+* Sustainable route suggestions
+* Smart mobility insights
+* Context-aware transit assistance
+
+### 📍 Nearby Critical Infrastructure
+
+* Hospitals
+* Transit stations
+* Schools / shelters
+* Community locations
+
+### 📈 Predictive Urban Intelligence
+
+Powered by **IBM Granite Time Series**
+
+UrbanFlow predicts:
+
+* Future traffic trends
+* Transit efficiency changes
+* Urban disruption risk
+* Smart city conditions for upcoming hours
+
+Instead of only reacting to urban problems, UrbanFlow helps cities **predict disruptions before they happen**.
+
+---
+
+## 🧠 Problem Statement
+
+Urban areas face major challenges such as:
 
 * Traffic congestion
-* Climate impact
-* Emergency response inefficiencies
-* Accessibility barriers
-* Urban infrastructure strain
+* Delayed emergency response
+* Poor transit efficiency
+* Limited real-time city intelligence
+* Lack of predictive urban planning
 
-UrbanFlow aims to provide a centralized AI-powered platform that improves:
+Most systems only react after problems occur.
 
-* Sustainable transportation
-* Smart emergency response
-* Urban accessibility
-* Real-time city insights
-* Climate-conscious decision making
+**UrbanFlow introduces predictive urban intelligence** by combining real-time monitoring with AI forecasting.
 
 ---
 
-# 🌍 SDGs Targeted
+## 💡 Solution
 
-UrbanFlow aligns with the following UN Sustainable Development Goals:
+UrbanFlow creates a centralized smart-city platform that:
 
-| SDG        | Goal                                    |
-| ---------- | --------------------------------------- |
-| 🏙️ SDG 11 | Sustainable Cities and Communities      |
-| 🌱 SDG 13  | Climate Action                          |
-| 🏗️ SDG 9  | Industry, Innovation and Infrastructure |
-| 🏥 SDG 3   | Good Health and Well-Being              |
-| ⚖️ SDG 10  | Reduced Inequalities                    |
-| 🤝 SDG 17  | Partnerships for the Goals              |
+1. Monitors live city conditions
+2. Provides optimized routes using Google Maps
+3. Displays nearby emergency infrastructure
+4. Generates AI-powered recommendations
+5. Predicts future city disruptions using IBM Granite Time Series
 
 ---
 
-# ✨ Core Features
+## 🏗️ Tech Stack
 
-## 🗺️ Smart Transit System
-
-* AI-powered route suggestions
-* Sustainable transportation recommendations
-* Carbon-conscious travel insights
-* Smart city map visualization
-
-## 🚨 Emergency Response Mode
-
-* Nearby hospitals and shelters
-* Disaster-safe route guidance
-* Emergency alerts visualization
-* Rapid emergency assistance workflows
-
-## 🤖 AI Civic Assistant
-
-* AI-powered urban assistant
-* Sustainability recommendations
-* Emergency guidance
-* Accessibility support
-* Multilingual interaction
-
-## 📊 Sustainability Dashboard
-
-* CO₂ reduction analytics
-* Transportation insights
-* Smart city metrics
-* Urban infrastructure statistics
-
-## ♿ Accessibility Features
-
-* Simplified user experience
-* Multilingual support
-* Low-bandwidth accessibility mode
-* Inclusive urban assistance
-
----
-
-# 🏗️ System Architecture
-
-```txt
-User
-   ↓
-Next.js Frontend
-   ↓
-Leaflet.js Smart City Maps
-   ↓
-FastAPI Backend APIs
-   ↓
-AI Layer
-(IBM watsonx.ai + OpenAI)
-   ↓
-PostgreSQL Database
-   ↓
-IBM Cloud Infrastructure
-   ↓
-IBM Z Enterprise Architecture Layer
-```
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend
+### Frontend
 
 * Next.js
-* TypeScript
-* TailwindCSS
-* Leaflet.js
-* OpenStreetMap
+* React
+* Tailwind CSS
+* Framer Motion
+* React Leaflet
 
-## Backend
+### Backend
 
 * FastAPI
 * Python
-* SQLAlchemy
+* REST APIs
 
-## Database
+### APIs & Services
 
-* PostgreSQL
+* Google Maps API (Routing & Directions)
+* Geoapify API (Places & Infrastructure)
+* Open-Meteo API (Weather)
+* Groq API (AI Recommendations)
+* IBM Granite Time Series (Predictive Forecasting)
+
+### Database
+
 * Supabase
-
-## AI Stack
-
-* IBM watsonx.ai
-* OpenAI API
-* Hugging Face (optional)
-
-## IBM Technologies
-
-* IBM Cloud
-* IBM Z Enterprise Architecture
-
-## Deployment
-
-* Vercel
-* Render / IBM Cloud
+* PostgreSQL
 
 ---
 
-# 📂 Project Structure
+## 🧩 System Architecture
 
-```txt
-urbanflow/
-│
-├── frontend/          # Next.js frontend
-├── backend/           # FastAPI backend
-├── docs/              # Architecture & presentation assets
-├── README.md
-└── .gitignore
+```text
+Frontend (Next.js)
+        ↓
+FastAPI Backend
+        ↓
+ ┌─────────────────────────┐
+ | Google Maps API         |
+ | Geoapify API            |
+ | Open-Meteo Weather API  |
+ | Groq AI                 |
+ | IBM Granite Time Series |
+ └─────────────────────────┘
+        ↓
+Supabase Database
 ```
 
 ---
 
-# ⚡ Installation
+## 🔥 Key Highlights
 
-## Clone Repository
+✅ Real-time Smart City Dashboard
+✅ AI-Powered Urban Recommendations
+✅ Google Maps Route Optimization
+✅ Transit Route Planning
+✅ Emergency Infrastructure Mapping
+✅ Predictive Urban Analytics
+✅ IBM Technology Integration
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/urbanflow.git
+git clone https://github.com/akash-gupta04/urbanflow.git
 cd urbanflow
 ```
 
+### 2. Backend Setup
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Create a `.env` file:
+
+```env
+GOOGLE_MAPS_API_KEY=
+GROQ_API_KEY=
+GEOAPIFY_API_KEY=
+HF_TOKEN=
+DATABASE_URL=
+```
+
+Run backend:
+
+```bash
+uvicorn main:app --reload
+```
+
 ---
 
-# 🖥️ Frontend Setup
+### 3. Frontend Setup
 
 ```bash
 cd frontend
@@ -178,124 +198,26 @@ npm install
 npm run dev
 ```
 
-Frontend runs on:
+---
 
-```txt
-http://localhost:3000
-```
+## 📍 Future Improvements
+
+* Real-time traffic prediction
+* Live emergency responder tracking
+* Multi-city forecasting
+* Public transit disruption forecasting
+* Smart congestion prevention
+* IoT city sensor integration
 
 ---
 
-# ⚙️ Backend Setup
+## 👨‍💻 Team
 
-## Create Virtual Environment
-
-### Windows
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### Mac/Linux
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
+**UrbanFlow Team**
+IBM Z x UNSA Hackathon 2026
 
 ---
 
-## Install Dependencies
+## 📜 License
 
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Run Backend
-
-```bash
-uvicorn main:app --reload
-```
-
-Backend runs on:
-
-```txt
-http://127.0.0.1:8000
-```
-
----
-
-# 🔑 Environment Variables
-
-Create a `.env` file inside the backend directory.
-
-```env
-DATABASE_URL=your_postgresql_url
-OPENAI_API_KEY=your_openai_key
-WATSONX_API_KEY=your_watsonx_key
-```
-
----
-
-# 🧠 IBM Integration
-
-UrbanFlow incorporates IBM technologies to simulate enterprise-grade smart city infrastructure.
-
-## IBM watsonx.ai
-
-Used for:
-
-* AI-powered civic assistance
-* Emergency response workflows
-* Sustainability recommendations
-* Natural language interaction
-
-## IBM Cloud
-
-Used for:
-
-* Cloud deployment
-* Scalable infrastructure
-* Backend hosting
-
-## IBM Z
-
-UrbanFlow is architected with IBM Z-inspired enterprise principles:
-
-* High availability
-* Secure transaction processing
-* Scalable urban analytics
-* Mission-critical infrastructure reliability
-
----
-
-# 📸 Future Scope
-
-* Real-time public transit APIs
-* Predictive congestion analytics
-* Disaster forecasting
-* IoT smart city integrations
-* AI-powered traffic optimization
-* Citizen reporting system
-* Real-time sustainability tracking
-
----
-
-# 👨‍💻 Team
-
-Built with passion during the IBM Z × UNSA Sheridan Hackathon 2026.
-
----
-
-# 📜 License
-
-This project is developed for educational and hackathon purposes.
-
----
-
-# 🌟 UrbanFlow
-
-> *Smarter Cities. Sustainable Futures.*
+This project is built for educational and hackathon purposes.
