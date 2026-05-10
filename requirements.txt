@@ -1,1 +1,9 @@
-
+fastapi
+uvicorn
+requests
+python-dotenv
+groq
+sqlalchemy
+psycopg2-binary
+supabase
+polyline
