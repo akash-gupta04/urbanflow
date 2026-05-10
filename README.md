@@ -137,7 +137,32 @@ FastAPI Backend
  └─────────────────────────┘
         ↓
 Supabase Database
+
 ```
+🌍 Sustainable Development Goals (SDGs)
+
+UrbanFlow aligns with multiple United Nations Sustainable Development Goals (SDGs) by improving urban sustainability, transportation efficiency, emergency response, and resilient infrastructure.
+
+🎯 SDG 3 — Good Health and Well-being
+
+UrbanFlow improves emergency accessibility by helping optimize routes to hospitals, emergency services, and critical infrastructure.
+
+🏙️ SDG 9 — Industry, Innovation and Infrastructure
+
+The platform leverages AI, predictive analytics, and smart mobility systems to modernize urban infrastructure and decision-making.
+
+🌱 SDG 11 — Sustainable Cities and Communities
+
+UrbanFlow promotes smarter transit systems, reduced congestion, sustainable transportation, and safer urban environments.
+
+🌍 SDG 13 — Climate Action
+
+By encouraging optimized transit routes and reducing unnecessary traffic congestion, UrbanFlow contributes to lowering emissions and improving environmental sustainability.
+
+🤝 SDG 17 — Partnerships for the Goals
+
+UrbanFlow integrates multiple technologies and APIs including Google Maps, Geoapify, Groq, and IBM Granite to create collaborative smart-city intelligence.
+
 
 ---
 
