@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+:root {
+  --uf-bg: #08090d;
+  --uf-bg-elevated: #0e1016;
+  --uf-fg: #f1f5f9;
+  --uf-muted: #94a3b8;
+  --uf-faint: #64748b;
+  --uf-border: rgba(148, 163, 184, 0.12);
+  --uf-border-strong: rgba(148, 163, 184, 0.2);
+  --uf-surface: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.055) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  --uf-teal: #2dd4bf;
+  --uf-teal-dim: rgba(45, 212, 191, 0.14);
+  --uf-indigo: #818cf8;
+  --uf-glow: rgba(45, 212, 191, 0.12);
+  --background: var(--uf-bg);
+  --foreground: var(--uf-fg);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 7.5rem;
+}
+
+@media (min-width: 640px) {
+  html {
+    scroll-padding-top: 8.5rem;
+  }
+}
+
+body {
+  min-height: 100%;
+  background: var(--uf-bg);
+  color: var(--uf-fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Surfaces */
+.uf-card {
+  border-radius: 1rem;
+  border: 1px solid var(--uf-border);
+  background: var(--uf-surface);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 20px 50px -28px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+}
+
+.uf-card--flush {
+  border-radius: 1rem 1rem 0 0;
+  border-bottom: none;
+}
+
+.uf-inset {
+  border-radius: 0.75rem;
+  border: 1px solid var(--uf-border);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.uf-kicker {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(45, 212, 191, 0.85);
+}
+
+.uf-kicker-muted {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--uf-muted);
+}
+
+.uf-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #5eead4 0%, #2dd4bf 45%, #14b8a6 100%);
+  color: #0f172a;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 12px 28px -8px rgba(45, 212, 191, 0.35);
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
+}
+
+.uf-btn-primary:hover {
+  filter: brightness(1.06);
+}
+
+.uf-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.uf-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 1.15rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--uf-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--uf-fg);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.uf-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+.uf-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--uf-border);
+  background: rgba(0, 0, 0, 0.45);
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  color: var(--uf-fg);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.uf-input::placeholder {
+  color: #64748b;
+}
+
+.uf-input:focus {
+  border-color: rgba(45, 212, 191, 0.45);
+  box-shadow: 0 0 0 3px var(--uf-teal-dim);
+}
+
+html[data-low-bandwidth="true"] .ambient-backdrop {
+  display: none;
+}
+
+html[data-simple-ui="true"] {
+  font-size: 106%;
+}
+
+html[data-simple-ui="true"] .uf-card {
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+html[data-high-contrast="true"] {
+  --uf-fg: #fafafa;
+  --uf-muted: #cbd5e1;
+}
+
+html[data-high-contrast="true"] .uf-card {
+  background: rgba(0, 0, 0, 0.62);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+::selection {
+  background: rgba(45, 212, 191, 0.28);
+  color: #fff;
+}
+
+/* Leaflet */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  background: var(--uf-bg-elevated);
+  color: var(--uf-fg);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--uf-border);
+}
+
+.leaflet-popup-tip {
+  background: var(--uf-bg-elevated);
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.leaflet-container {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
