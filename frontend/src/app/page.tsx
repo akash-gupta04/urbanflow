@@ -138,7 +138,10 @@ export default function HomePage() {
           <div className="uf-card flex min-h-0 flex-1 flex-col justify-center p-5 sm:p-6">
             <Sparkles className="h-8 w-8 text-indigo-400/90" aria-hidden />
             <p className="mt-3 text-sm font-medium text-slate-300">
-              Checkout the Github Repository for Source Code!
+              <Link
+              href="https://github.com/akash-gupta04/urbanflow">
+                Checkout the Github Repository for Source Code!
+            </Link>
             </p>
           </div>
         </aside>
