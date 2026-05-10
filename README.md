@@ -1,7 +1,6 @@
 # 🌆 UrbanFlow
 
 **AI-Powered Smart City Intelligence Platform**
-🔗 **Devpost:** [UrbanFlow Submission] - (https://devpost.com/software/urbanflow-gtxeoq)) 
 
 UrbanFlow is a smart city intelligence platform designed to improve **urban mobility, emergency response, and sustainable transportation** using **AI-powered recommendations, real-time routing, predictive analytics, and live city monitoring**.
 
@@ -215,6 +214,20 @@ npm run dev
 
 **UrbanFlow Team**
 IBM Z x UNSA Hackathon 2026
+
+### Team Members
+
+#### Akash Gupta
+
+* GitHub: (https://github.com/akash-gupta04)
+* LinkedIn: (https://www.linkedin.com/in/akash-gupta-6a447a237/)
+
+#### Riken Patel
+
+* GitHub: (https://github.com/RikenMor001)
+* LinkedIn: (https://www.linkedin.com/in/riken-patel-188b762aa/)
+
+
 
 ---
 
