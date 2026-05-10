@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
   MapContainer,
   TileLayer,
@@ -16,6 +17,11 @@ import axios from "axios";
 import { Building2, Bus, HeartPulse, MapPin, MapPinned } from "lucide-react";
 import { getApiBaseUrl } from "@/lib/api";
 import type { TripMapPayload } from "@/lib/tripMap";
+
+const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+const MapGoogle = googleMapsKey
+  ? dynamic(() => import("@/components/MapGoogle"), { ssr: false })
+  : null;
 
 const LEAFLET_VERSION = "1.9.4";
 const ICON_BASE = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/images/`;
@@ -64,11 +70,11 @@ function normalizeSeverity(raw: string): "High" | "Medium" | "Low" | "unknown" {
 function severityCircleColor(severity: string): string {
   switch (normalizeSeverity(severity)) {
     case "High":
-      return "#dc2626";
+      return "#f87171";
     case "Medium":
-      return "#eab308";
+      return "#facc15";
     case "Low":
-      return "#22c55e";
+      return "#4ade80";
     default:
       return "#64748b";
   }
@@ -149,13 +155,26 @@ export default function Map({
     };
   }, [selectedSeverity]);
 
+  const tripPolylineGlow = useMemo(() => {
+    if (!trip || trip.geometry_source === "straight_line") return null;
+    const google = trip.geometry_source === "google_directions";
+    return {
+      color: "#0f766e",
+      weight: google ? 14 : 12,
+      opacity: 0.42,
+      lineCap: "round" as const,
+      lineJoin: "round" as const,
+    };
+  }, [trip]);
+
   const tripPolylineOptions = useMemo(() => {
     if (!trip) return null;
     const straight = trip.geometry_source === "straight_line";
+    const google = trip.geometry_source === "google_directions";
     return {
-      color: "#2dd4bf",
-      weight: straight ? 3 : 5,
-      opacity: 0.92,
+      color: "#5eead4",
+      weight: straight ? 3 : google ? 5 : 5,
+      opacity: 0.98,
       lineCap: "round" as const,
       lineJoin: "round" as const,
       dashArray: straight ? "10 7" : undefined,
@@ -202,8 +221,12 @@ export default function Map({
         </h2>
         <p className="mt-1 text-sm text-slate-500">
           {trip
-            ? "Your Transit trip path (driving geometry), corridor bus stops, hospitals, and hubs — tap pins for detail."
-            : "Hospitals, transit, and community spots — tap a pin to learn more."}
+            ? googleMapsKey
+              ? "Your trip on Google Maps: traffic-aware driving path when available, corridor stops, and nearby places — use pin titles for detail."
+              : "Your Transit trip path (driving geometry), corridor bus stops, hospitals, and hubs — tap pins for detail."
+            : googleMapsKey
+              ? "Hospitals, transit, and community spots nearby — hover pins for names."
+              : "Hospitals, transit, and community spots — tap a pin to learn more."}
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--uf-border)] px-4 py-3 sm:px-5">
@@ -233,105 +256,125 @@ export default function Map({
       </div>
 
       <div className="h-[min(70vh,640px)] min-h-[420px]">
-        <MapContainer
-          center={[43.7315, -79.7624]}
-          zoom={12}
-          className="h-full w-full z-0 [&_.leaflet-control-attribution]:bg-zinc-900/90 [&_.leaflet-control-attribution]:text-zinc-500 [&_.leaflet-control-attribution]:text-[10px]"
-          scrollWheelZoom
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <MapNavigation trip={trip} selectedAlert={selectedAlert} />
-
-          {trip && tripPolylineOptions ? (
-            <Polyline
-              positions={trip.coordinates}
-              pathOptions={tripPolylineOptions}
+        {MapGoogle && googleMapsKey ? (
+          <div className="h-full w-full overflow-hidden rounded-b-xl ring-1 ring-white/[0.06]">
+            <MapGoogle
+              selectedAlert={selectedAlert}
+              selectedSeverity={selectedSeverity}
+              trip={trip}
+              locations={locations}
             />
-          ) : null}
+          </div>
+        ) : (
+          <div className="h-full w-full overflow-hidden rounded-b-xl ring-1 ring-white/[0.06]">
+            <MapContainer
+              center={[43.7315, -79.7624]}
+              zoom={12}
+              className="h-full w-full z-0 [&_.leaflet-control-attribution]:rounded-bl-xl [&_.leaflet-control-attribution]:border-t [&_.leaflet-control-attribution]:border-white/[0.06] [&_.leaflet-control-attribution]:bg-[#08090d]/95 [&_.leaflet-control-attribution]:px-2 [&_.leaflet-control-attribution]:py-1 [&_.leaflet-control-attribution]:text-[10px] [&_.leaflet-control-attribution]:text-slate-500 [&_.leaflet-control-attribution]:backdrop-blur-sm [&_.leaflet-control-attribution_a]:text-teal-400/90 [&_.leaflet-control-attribution_a]:underline-offset-2"
+              scrollWheelZoom
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+              <MapNavigation trip={trip} selectedAlert={selectedAlert} />
 
-          {trip
-            ? trip.transit_stops.map((s, i) => (
-                <CircleMarker
-                  key={`trip-stop-${i}-${s.lat}-${s.lon}`}
-                  center={[s.lat, s.lon]}
-                  radius={6}
-                  pathOptions={{
-                    color: "#fbbf24",
-                    fillColor: "#fbbf24",
-                    fillOpacity: 0.85,
-                    weight: 2,
-                  }}
-                >
-                  <Popup>
-                    <div className="min-w-[120px] text-slate-900">
-                      <p className="m-0 text-xs font-semibold">Bus / transit stop</p>
-                      <p className="mt-1 text-xs">{s.name}</p>
-                      <p className="mt-1 text-[10px] text-slate-600">
-                        Near your planned corridor
-                      </p>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              ))
-            : null}
+              {trip && tripPolylineGlow ? (
+                <Polyline
+                  positions={trip.coordinates}
+                  pathOptions={tripPolylineGlow}
+                />
+              ) : null}
+              {trip && tripPolylineOptions ? (
+                <Polyline
+                  positions={trip.coordinates}
+                  pathOptions={tripPolylineOptions}
+                />
+              ) : null}
 
-          {trip ? (
-            <>
-              <Marker position={[trip.from.lat, trip.from.lon]}>
-                <Popup>
-                  <div className="min-w-[130px] text-slate-900">
-                    <p className="m-0 text-xs font-semibold">Start</p>
-                    <p className="mt-1 text-xs">{trip.from.label}</p>
-                  </div>
-                </Popup>
-              </Marker>
-              <Marker position={[trip.to.lat, trip.to.lon]}>
-                <Popup>
-                  <div className="min-w-[130px] text-slate-900">
-                    <p className="m-0 text-xs font-semibold">Destination</p>
-                    <p className="mt-1 text-xs">{trip.to.label}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            </>
-          ) : null}
+              {trip
+                ? trip.transit_stops.map((s, i) => (
+                    <CircleMarker
+                      key={`trip-stop-${i}-${s.lat}-${s.lon}`}
+                      center={[s.lat, s.lon]}
+                      radius={7}
+                      pathOptions={{
+                        color: "#0f172a",
+                        fillColor: "#fbbf24",
+                        fillOpacity: 0.95,
+                        weight: 2,
+                        opacity: 1,
+                      }}
+                    >
+                      <Popup>
+                        <div className="min-w-[120px] text-slate-900">
+                          <p className="m-0 text-xs font-semibold">Bus / transit stop</p>
+                          <p className="mt-1 text-xs">{s.name}</p>
+                          <p className="mt-1 text-[10px] text-slate-600">
+                            Near your planned corridor
+                          </p>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  ))
+                : null}
 
-          {locations.map((location, index) => {
-            const Icon = typeIcon(location.type);
-            return (
-              <Marker
-                key={`${location.lat}-${location.lon}-${index}`}
-                position={[location.lat, location.lon]}
-              >
-                <Popup>
-                  <div className="min-w-[140px]">
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 shrink-0 text-teal-400" />
-                      <h3 className="m-0 text-sm font-semibold text-white">
-                        {location.name}
-                      </h3>
-                    </div>
-                    <p className="mt-2 text-xs text-zinc-400">
-                      <span className="text-zinc-500">Type · </span>
-                      <span className="capitalize">{location.type}</span>
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+              {trip ? (
+                <>
+                  <Marker position={[trip.from.lat, trip.from.lon]}>
+                    <Popup>
+                      <div className="min-w-[130px] text-slate-900">
+                        <p className="m-0 text-xs font-semibold">Start</p>
+                        <p className="mt-1 text-xs">{trip.from.label}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                  <Marker position={[trip.to.lat, trip.to.lon]}>
+                    <Popup>
+                      <div className="min-w-[130px] text-slate-900">
+                        <p className="m-0 text-xs font-semibold">Destination</p>
+                        <p className="mt-1 text-xs">{trip.to.label}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </>
+              ) : null}
 
-          {area && (
-            <Circle
-              center={area.center}
-              radius={area.radius}
-              pathOptions={warningCirclePathOptions}
-            />
-          )}
-        </MapContainer>
+              {locations.map((location, index) => {
+                const Icon = typeIcon(location.type);
+                return (
+                  <Marker
+                    key={`${location.lat}-${location.lon}-${index}`}
+                    position={[location.lat, location.lon]}
+                  >
+                    <Popup>
+                      <div className="min-w-[140px]">
+                        <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4 shrink-0 text-teal-400" />
+                          <h3 className="m-0 text-sm font-semibold text-white">
+                            {location.name}
+                          </h3>
+                        </div>
+                        <p className="mt-2 text-xs text-zinc-400">
+                          <span className="text-zinc-500">Type · </span>
+                          <span className="capitalize">{location.type}</span>
+                        </p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+
+              {area && (
+                <Circle
+                  center={area.center}
+                  radius={area.radius}
+                  pathOptions={warningCirclePathOptions}
+                />
+              )}
+            </MapContainer>
+          </div>
+        )}
       </div>
     </div>
   );

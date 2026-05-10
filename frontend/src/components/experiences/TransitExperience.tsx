@@ -9,6 +9,7 @@ import { getApiBaseUrl } from "@/lib/api";
 import {
   TRIP_STORAGE_KEY,
   downsampleTripCoordinates,
+  type RouteAlternativeSummary,
   type StoredTripPayload,
   type TripMapPayload,
 } from "@/lib/tripMap";
@@ -22,6 +23,7 @@ type TripRouteResponse =
       geometry_source: TripMapPayload["geometry_source"];
       transit_stops: TripMapPayload["transit_stops"];
       buses_hint: TripMapPayload["buses_hint"];
+      route_alternatives?: RouteAlternativeSummary[];
     })
   | { ok: false; error: string };
 
@@ -71,7 +73,11 @@ export default function TransitExperience() {
     try {
       const [tripSettled, aiSettled] = await Promise.allSettled([
         axios.get<TripRouteResponse>(`${base}/trip-route`, {
-          params: { from_place: s, to_place: d },
+          params: {
+            from_place: s,
+            to_place: d,
+            ...(leaveAt.trim() ? { leave_at: leaveAt.trim() } : {}),
+          },
         }),
         axios.get<{ recommendation: string }>(`${base}/ai-recommendation`, {
           params: { alert },
@@ -109,10 +115,17 @@ export default function TransitExperience() {
       }
 
       if (tripBody) {
+        const routeAlts =
+          tripSettled.status === "fulfilled" &&
+          tripSettled.value.data.ok &&
+          tripSettled.value.data.route_alternatives
+            ? tripSettled.value.data.route_alternatives
+            : undefined;
         const stored: StoredTripPayload = {
           ...tripBody,
           coordinates: downsampleTripCoordinates(tripBody.coordinates),
           ai_recommendation: aiText || undefined,
+          route_alternatives: routeAlts,
         };
         try {
           sessionStorage.setItem(TRIP_STORAGE_KEY, JSON.stringify(stored));

@@ -1,10 +1,17 @@
 """Geocode free-text places, driving path, and corridor transit stops."""
 
 import os
+import time
 
 import requests
 
 from ai_service import generate_bus_lines_hint
+from google_routes import (
+    directions_driving,
+    directions_transit_summary,
+    geocode_google,
+    get_google_maps_key,
+)
 
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
 OSRM_BASE = "https://router.project-osrm.org/route/v1/driving"
@@ -128,9 +135,18 @@ def collect_transit_corridor(coords, api_key):
     return merged[:28]
 
 
-def build_trip_route(from_place: str, to_place: str):
-    a = geocode_place(from_place)
-    b = geocode_place(to_place)
+def build_trip_route(
+    from_place: str,
+    to_place: str,
+    departure_unix: int | None = None,
+):
+    gkey = get_google_maps_key()
+    a = geocode_google(from_place, gkey) if gkey else None
+    b = geocode_google(to_place, gkey) if gkey else None
+    if not a:
+        a = geocode_place(from_place)
+    if not b:
+        b = geocode_place(to_place)
     if not a or not b:
         return {
             "ok": False,
@@ -142,11 +158,31 @@ def build_trip_route(from_place: str, to_place: str):
 
     lat1, lon1 = a["lat"], a["lon"]
     lat2, lon2 = b["lat"], b["lon"]
-    coords = fetch_driving_polyline(lat1, lon1, lat2, lon2)
+    dep = departure_unix if departure_unix and departure_unix > 0 else int(time.time())
+
+    coords = None
     source = "osrm"
+    route_alternatives = None
+    transit_google_hint = None
+
+    if gkey:
+        gdir = directions_driving(lat1, lon1, lat2, lon2, gkey, dep)
+        if gdir and gdir.get("coordinates") and len(gdir["coordinates"]) >= 2:
+            coords = gdir["coordinates"]
+            source = "google_directions"
+            route_alternatives = gdir.get("alternatives") or []
+        transit_google_hint = directions_transit_summary(
+            lat1, lon1, lat2, lon2, gkey, dep
+        )
+
+    if not coords or len(coords) < 2:
+        coords = fetch_driving_polyline(lat1, lon1, lat2, lon2)
+        source = "osrm"
+        route_alternatives = None
     if not coords or len(coords) < 2:
         coords = [[lat1, lon1], [lat2, lon2]]
         source = "straight_line"
+        route_alternatives = None
 
     api_key = os.getenv("GEOAPIFY_API_KEY") or ""
     transit_stops = collect_transit_corridor(coords, api_key)
@@ -159,8 +195,10 @@ def build_trip_route(from_place: str, to_place: str):
         to_place.strip(),
         stop_names,
     )
+    if transit_google_hint:
+        buses_hint = f"{buses_hint}\n\n{transit_google_hint}"
 
-    return {
+    out: dict = {
         "ok": True,
         "from": {
             "lat": lat1,
@@ -179,3 +217,6 @@ def build_trip_route(from_place: str, to_place: str):
         "transit_stops": transit_stops,
         "buses_hint": buses_hint,
     }
+    if route_alternatives:
+        out["route_alternatives"] = route_alternatives
+    return out

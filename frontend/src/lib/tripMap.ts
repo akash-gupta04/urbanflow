@@ -22,13 +22,23 @@ export type TripMapPayload = {
     resolved?: string;
   };
   coordinates: [number, number][];
-  geometry_source: "osrm" | "straight_line";
+  geometry_source: "osrm" | "straight_line" | "google_directions";
   transit_stops: TripTransitStop[];
   buses_hint: string;
 };
 
+export type RouteAlternativeSummary = {
+  summary: string;
+  duration_text: string;
+  distance_text: string;
+  duration_seconds: number;
+  distance_meters: number;
+  is_best: boolean;
+};
+
 export type StoredTripPayload = TripMapPayload & {
   ai_recommendation?: string;
+  route_alternatives?: RouteAlternativeSummary[];
 };
 
 export function downsampleTripCoordinates(

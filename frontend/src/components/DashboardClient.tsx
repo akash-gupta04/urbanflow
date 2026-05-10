@@ -116,6 +116,37 @@ export default function DashboardClient() {
             <span className="text-slate-500"> → </span>
             <span className="text-white">{tripFromTransit.to.label}</span>
           </p>
+          {tripFromTransit.route_alternatives &&
+          tripFromTransit.route_alternatives.length > 0 ? (
+            <div className="mt-3 border-t border-white/[0.06] pt-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-teal-300/90">
+                Driving options (Google ranked by time in traffic)
+              </p>
+              <ul className="mt-2 space-y-2 text-sm text-slate-300">
+                {tripFromTransit.route_alternatives.map((r, i) => (
+                  <li
+                    key={`${r.summary}-${i}`}
+                    className={
+                      r.is_best
+                        ? "rounded-lg border border-teal-400/30 bg-teal-500/10 px-3 py-2"
+                        : "rounded-lg border border-white/[0.06] px-3 py-2"
+                    }
+                  >
+                    <span className="font-medium text-white">{r.summary}</span>
+                    <span className="text-slate-500"> · </span>
+                    <span>{r.duration_text}</span>
+                    <span className="text-slate-500"> · </span>
+                    <span>{r.distance_text}</span>
+                    {r.is_best ? (
+                      <span className="ml-2 text-[10px] font-semibold uppercase text-teal-300/90">
+                        Best now
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {tripFromTransit.buses_hint ? (
             <p className="mt-3 text-sm leading-relaxed text-teal-100/95">
               <span className="font-medium text-teal-200/90">Buses to look for · </span>

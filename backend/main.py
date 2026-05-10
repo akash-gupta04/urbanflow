@@ -1,4 +1,7 @@
-import requests,os
+import os
+from datetime import datetime
+
+import requests
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from fastapi.middleware.cors import (
@@ -129,11 +132,24 @@ def ai_recommendation(
 def trip_route(
     from_place: str,
     to_place: str,
+    leave_at: str | None = None,
 ):
+    departure_unix = None
+    if leave_at and str(leave_at).strip():
+        raw = str(leave_at).strip()
+        try:
+            if raw.endswith("Z"):
+                dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            else:
+                dt = datetime.fromisoformat(raw)
+            departure_unix = int(dt.timestamp())
+        except ValueError:
+            departure_unix = None
 
     return build_trip_route(
         from_place,
         to_place,
+        departure_unix,
     )
 
 
