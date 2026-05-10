@@ -12,6 +12,7 @@ const mainNav = [
   { href: "/transit", label: "Transit" },
   { href: "/emergency", label: "Emergency" },
   { href: "/civic-assistant", label: "Assistant" },
+  { href: "/granite", label: "Granite" },
 ] as const;
 
 const dashboardAnchors = [

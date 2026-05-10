@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 import requests
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 from fastapi.middleware.cors import (
     CORSMiddleware
@@ -20,11 +20,17 @@ from models import (
 )
 
 from ai_service import (
-    generate_recommendation
+    PredictCityError,
+    generate_recommendation,
+    predict_city_response,
 )
 
 from trip_route import (
     build_trip_route
+)
+
+from granite_timeseries import (
+    city_tsfm_api_bundle,
 )
 
 load_dotenv()
@@ -126,6 +132,37 @@ def ai_recommendation(
         "recommendation":
             recommendation
     }
+
+
+@app.get("/predict-city")
+def predict_city(city: str = "Brampton"):
+    """LLM JSON outlook (Granite instruct on HF if configured, else Groq) — not time-series TTM."""
+    try:
+        return predict_city_response(city)
+    except PredictCityError as exc:
+        raise HTTPException(
+            status_code=exc.status_code,
+            detail=exc.detail,
+        ) from exc
+
+
+@app.get("/predict-city-tsfm")
+def predict_city_tsfm(
+    city: str = "Brampton",
+    context_length: int = 512,
+    prediction_length: int = 24,
+    history_tail: int = 48,
+):
+    """IBM Granite time series (TTM) via TSFM service + synthetic history preview for demos."""
+    ctx = max(32, min(int(context_length), 2048))
+    pred = max(1, min(int(prediction_length), 512))
+    tail = max(8, min(int(history_tail), ctx))
+    return city_tsfm_api_bundle(
+        city,
+        context_length=ctx,
+        prediction_length=pred,
+        history_tail=tail,
+    )
 
 
 @app.get("/trip-route")
