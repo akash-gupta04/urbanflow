@@ -26,7 +26,7 @@ export default function DashboardClient() {
   const [selectedSeverity, setSelectedSeverity] = useState("");
 
   const handleSelectAlert = (title: string, severity: string) => {
-    setSelectedAlert(title);
+    setSelectedAlert(title)
     setSelectedSeverity(severity);
   };
   const [metrics, setMetrics] = useState<CityMetrics | null>(null);
