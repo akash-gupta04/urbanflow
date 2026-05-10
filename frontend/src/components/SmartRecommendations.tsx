@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 
 export default function SmartRecommendations({
   selectedAlert,
+  selectedCity,
 }: {
   selectedAlert: string;
+  selectedCity: string;
 }) {
   const [recommendation,
     setRecommendation] =

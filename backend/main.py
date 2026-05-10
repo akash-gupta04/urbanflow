@@ -19,7 +19,9 @@ from models import (
 from ai_service import (
     generate_recommendation
 )
-
+from smart_metrics import (
+    generate_city_metrics
+)
 load_dotenv()
 
 app = FastAPI()
@@ -120,26 +122,52 @@ def ai_recommendation(
             recommendation
     }
 
-
 @app.get("/nearby-locations")
-def nearby_locations():
+def nearby_locations(
+    city: str = "Brampton"
+):
 
     api_key = os.getenv(
         "GEOAPIFY_API_KEY"
     )
 
-    lat = 43.7315
-    lon = -79.7624
+    CITY_DATA = {
+        "Brampton": {
+            "lat": 43.7315,
+            "lon": -79.7624,
+        },
 
-    categories_query = (
-        "healthcare.hospital,"
-        "public_transport,"
-        "service.community_centre"
+        "Toronto": {
+            "lat": 43.6532,
+            "lon": -79.3832,
+        },
+
+        "Mississauga": {
+            "lat": 43.5890,
+            "lon": -79.6441,
+        },
+
+        "Vancouver": {
+            "lat": 49.2827,
+            "lon": -123.1207,
+        },
+    }
+
+    city_data = CITY_DATA.get(
+        city,
+        CITY_DATA["Brampton"]
     )
+
+    lat = city_data["lat"]
+    lon = city_data["lon"]
 
     url = (
         "https://api.geoapify.com/v2/places"
-        f"?categories={categories_query}"
+        "?categories="
+        "healthcare.hospital,"
+        "public_transport.bus,"
+        "public_transport.train,"
+        "education.school"
         f"&filter=circle:{lon},{lat},5000"
         "&limit=20"
         f"&apiKey={api_key}"
@@ -167,11 +195,9 @@ def nearby_locations():
                 {}
             )
 
-            place_categories = (
-                props.get(
-                    "categories",
-                    []
-                )
+            place_categories = props.get(
+                "categories",
+                []
             )
 
             category = "other"
@@ -180,27 +206,20 @@ def nearby_locations():
                 "healthcare.hospital"
                 in place_categories
             ):
-                category = (
-                    "hospital"
-                )
+                category = "hospital"
 
             elif any(
                 "public_transport"
                 in c
                 for c in place_categories
             ):
-                category = (
-                    "transit"
-                )
+                category = "transit"
 
-            elif any(
-                "community"
-                in c
-                for c in place_categories
+            elif (
+                "education.school"
+                in place_categories
             ):
-                category = (
-                    "shelter"
-                )
+                category = "shelter"
 
             coordinates = (
                 place["geometry"]
@@ -231,4 +250,91 @@ def nearby_locations():
         return {
             "error":
             str(e)
-        }       
+        }
+@app.get("/city-metrics")
+def city_metrics(
+    city: str = "Brampton"
+):
+
+    try:
+
+        city_coords = {
+            "Brampton":
+                (43.7315,
+                 -79.7624),
+
+            "Toronto":
+                (43.6532,
+                 -79.3832),
+
+            "Mississauga":
+                (43.5890,
+                 -79.6441),
+
+            "Vancouver":
+                (49.2827,
+                 -123.1207),
+        }
+
+        lat, lon = (
+            city_coords.get(
+                city,
+                city_coords[
+                    "Brampton"
+                ]
+            )
+        )
+
+        nearby = (
+            nearby_locations(
+                city=city
+            )
+        )
+
+        hospitals = len([
+            p for p in nearby
+            if p["type"]
+            == "hospital"
+        ])
+
+        transit = len([
+            p for p in nearby
+            if p["type"]
+            == "transit"
+        ])
+
+        shelters = len([
+            p for p in nearby
+            if p["type"]
+            == "shelter"
+        ])
+
+        # DEBUG
+        print("CITY:", city)
+        print("Hospitals:", hospitals)
+        print("Transit:", transit)
+        print("Shelters:", shelters)
+
+        metrics = (
+            generate_city_metrics(
+                city=city,
+                lat=lat,
+                lon=lon,
+                hospitals=hospitals,
+                transit=transit,
+                shelters=shelters,
+            )
+        )
+
+        print("AI Metrics:", metrics)
+
+        return metrics
+
+    except Exception as e:
+
+        print("City metrics error:", e)
+
+        return {
+            "error":
+            str(e)
+        }

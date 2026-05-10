@@ -53,7 +53,7 @@ function FlyToAlert({
     ) {
       map.flyTo(
         alertLocations[
-          selectedAlert
+        selectedAlert
         ],
         13,
         {
@@ -68,8 +68,10 @@ function FlyToAlert({
 
 export default function Map({
   selectedAlert,
+  selectedCity,
 }: {
   selectedAlert: string;
+  selectedCity: string;
 }) {
   const [locations,
     setLocations] =
@@ -80,52 +82,76 @@ export default function Map({
     const fetchLocations =
       async () => {
 
-      try {
+        try {
 
-        const response =
-          await axios.get(
-            "http://localhost:8000/nearby-locations"
+          const response =
+            await axios.get(
+            `http://localhost:8000/nearby-locations?city=${selectedCity}`
           );
+          if (
+            Array.isArray(
+              response.data
+            )
+          ) {
 
-        if (
-          Array.isArray(
-            response.data
-          )
-        ) {
+            setLocations(
+              response.data
+            );
 
-          setLocations(
-            response.data
-          );
+          } else {
 
-        } else {
+            console.error(
+              "API Error:",
+              response.data
+            );
+
+            setLocations([]);
+          }
+
+        } catch (error) {
 
           console.error(
-            "API Error:",
-            response.data
+            "Location error:",
+            error
           );
 
           setLocations([]);
         }
-
-      } catch (error) {
-
-        console.error(
-          "Location error:",
-          error
-        );
-
-        setLocations([]);
-      }
-    };
+      };
 
     fetchLocations();
 
-  }, []);
+  }, [selectedCity]);
+const cityCoordinates:
+  Record<
+    string,
+    [number, number]
+  > = {
 
+  Brampton:
+    [43.7315, -79.7624],
+
+  Toronto:
+    [43.6532, -79.3832],
+
+  Mississauga:
+    [43.5890, -79.6441],
+
+  Vancouver:
+    [49.2827, -123.1207],
+};
+
+const selectedCoords =
+  cityCoordinates[
+    selectedCity
+  ] ||
+  cityCoordinates[
+    "Brampton"
+  ];
   return (
     <div className="rounded-3xl overflow-hidden border border-zinc-800 h-[650px]">
       <MapContainer
-        center={[43.7315, -79.7624]}
+        center={selectedCoords}
         zoom={12}
         className="h-full w-full z-0"
       >
@@ -156,22 +182,18 @@ export default function Map({
               <Popup>
                 <div>
                   <h3 className="font-bold">
-                    {
-                      location.name
-                    }
+                    {location.type === "hospital" && "🏥 "}
+                    {location.type === "transit" && "🚌 "}
+                    {location.type === "shelter" && "🏫 "}
+                    {location.name}
                   </h3>
 
                   <p className="text-sm mt-1">
-                    Category:
-                    {" "}
-                    {
-                      location.type
-                    }
+                    Category: {location.type}
                   </p>
 
                   <p className="text-green-500 text-sm">
-                    Status:
-                    Active
+                    Status: Active
                   </p>
                 </div>
               </Popup>
@@ -182,92 +204,92 @@ export default function Map({
         {/* Flood */}
         {selectedAlert ===
           "Flood Warning" && (
-          <Circle
-            center={[
-              43.725,
-              -79.75,
-            ]}
-            radius={1000}
-            pathOptions={{
-              color:
-                "#ef4444",
-              fillOpacity:
-                0.25,
-            }}
-          />
-        )}
+            <Circle
+              center={[
+                43.725,
+                -79.75,
+              ]}
+              radius={1000}
+              pathOptions={{
+                color:
+                  "#ef4444",
+                fillOpacity:
+                  0.25,
+              }}
+            />
+          )}
 
         {/* Traffic */}
         {selectedAlert ===
           "Heavy Traffic" && (
-          <Circle
-            center={[
-              43.7315,
-              -79.7624,
-            ]}
-            radius={900}
-            pathOptions={{
-              color:
-                "#eab308",
-              fillOpacity:
-                0.22,
-            }}
-          />
-        )}
+            <Circle
+              center={[
+                43.7315,
+                -79.7624,
+              ]}
+              radius={900}
+              pathOptions={{
+                color:
+                  "#eab308",
+                fillOpacity:
+                  0.22,
+              }}
+            />
+          )}
 
         {/* Heatwave */}
         {selectedAlert ===
           "Heatwave Alert" && (
-          <Circle
-            center={[
-              43.74,
-              -79.77,
-            ]}
-            radius={1200}
-            pathOptions={{
-              color:
-                "#f97316",
-              fillOpacity:
-                0.22,
-            }}
-          />
-        )}
+            <Circle
+              center={[
+                43.74,
+                -79.77,
+              ]}
+              radius={1200}
+              pathOptions={{
+                color:
+                  "#f97316",
+                fillOpacity:
+                  0.22,
+              }}
+            />
+          )}
 
         {/* Transit */}
         {selectedAlert ===
           "Transit Delay" && (
-          <Circle
-            center={[
-              43.735,
-              -79.748,
-            ]}
-            radius={850}
-            pathOptions={{
-              color:
-                "#3b82f6",
-              fillOpacity:
-                0.22,
-            }}
-          />
-        )}
+            <Circle
+              center={[
+                43.735,
+                -79.748,
+              ]}
+              radius={850}
+              pathOptions={{
+                color:
+                  "#3b82f6",
+                fillOpacity:
+                  0.22,
+              }}
+            />
+          )}
 
         {/* Storm */}
         {selectedAlert ===
           "Storm Advisory" && (
-          <Circle
-            center={[
-              43.72,
-              -79.79,
-            ]}
-            radius={1300}
-            pathOptions={{
-              color:
-                "#a855f7",
-              fillOpacity:
-                0.22,
-            }}
-          />
-        )}
+            <Circle
+              center={[
+                43.72,
+                -79.79,
+              ]}
+              radius={1300}
+              pathOptions={{
+                color:
+                  "#a855f7",
+                fillOpacity:
+                  0.22,
+              }}
+            />
+          )}
       </MapContainer>
     </div>
   );
