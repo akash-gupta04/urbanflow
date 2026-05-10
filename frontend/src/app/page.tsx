@@ -33,7 +33,7 @@ const highlights = [
 ] as const;
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "UrbanFlow",
   description: "UrbanFlow — city operations in one place.",
 };
 
